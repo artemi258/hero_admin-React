@@ -4,7 +4,7 @@ export const heroesFetching = () => {
     }
 }
 
-export const heroesFetched = (heroes, filter = 'все') => {
+export const heroesFetched = (heroes, filter = 'Все') => {
     return {
         type: 'HEROES_FETCHED',
         payload: heroes,

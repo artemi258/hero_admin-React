@@ -16,7 +16,6 @@ const HeroesList = () => {
     const {heroes, filter, heroesLoadingStatus} = useSelector(state => state);
     const dispatch = useDispatch();
     const {request} = useHttp();
-    const [state, setState] = useState(false);
 
     useEffect(() => {
         dispatch(heroesFetching());
@@ -38,7 +37,7 @@ const HeroesList = () => {
             return <h5 className="text-center mt-5">Героев пока нет</h5>
         }
         const content =   arr.filter(({element}) => {
-                            if (filter === 'все') {
+                            if (filter === 'Все') {
                                 return true;
                             } else {
                             return element === filter;
@@ -46,8 +45,8 @@ const HeroesList = () => {
                         })
                         .map(({id, ...props}) =>  {
                           return <CSSTransition key={id} timeout={1000} classNames="fade">
-                                <HeroesListItem state={state} setState={setState} key={id} id={id} {...props}/>
-                            </CSSTransition>
+                                    <HeroesListItem key={id} id={id} {...props}/>
+                                 </CSSTransition>
                         });
                     
                             return <TransitionGroup component={null}>

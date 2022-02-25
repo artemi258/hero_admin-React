@@ -13,7 +13,7 @@ import { useDispatch, useSelector } from 'react-redux';
 const HeroesFilters = () => {
 
     const {request} = useHttp();
-    const [option, setOption] = useState([]);
+    const [filters, setFilters] = useState([]);
     const {heroes, filter} = useSelector(state => state);
     const dispatch = useDispatch();
 
@@ -23,26 +23,26 @@ const HeroesFilters = () => {
 
     const onRequest = () => {
         request('http://localhost:3001/filters')
-                .then(onOptionLoaded)
+                .then(onFiltersLoaded)
                 .catch(() => dispatch(heroesFetchingError()))
     }
 
-    const onOptionLoaded = (option) => {
-        setOption(option); 
+    const onFiltersLoaded = (option) => {
+        setFilters(option); 
     }
 
     const onFilter = (filter) => {
         switch (filter) {
-                case 'огонь':
+                case 'Огонь':
                     dispatch(heroesFetched(heroes, filter));
                     break;
-                case 'вода':
+                case 'Вода':
                     dispatch(heroesFetched(heroes, filter));
                     break;
-                case 'ветер':
+                case 'Ветер':
                     dispatch(heroesFetched(heroes, filter));
                     break;
-                case 'земля':
+                case 'Земля':
                     dispatch(heroesFetched(heroes, filter));
                     break;
                 default:
@@ -53,23 +53,22 @@ const HeroesFilters = () => {
     let elementClassName;
 
     const content = () => {
-        return option.map((item, i) => {
-
+        return filters.map((item, i) => {
             
             switch (item) {
-                case 'все':
+                case 'Все':
                     elementClassName = 'btn btn-outline-dark';
                     break;
-                case 'огонь':
+                case 'Огонь':
                     elementClassName = 'btn btn-danger';
                     break;
-                case 'вода':
+                case 'Вода':
                     elementClassName = 'btn btn-primary';
                     break;
-                case 'ветер':
+                case 'Ветер':
                     elementClassName = 'btn btn-success';
                     break;
-                case 'земля':
+                case 'Земля':
                     elementClassName = 'btn btn-secondary';
                     break;
                 default:

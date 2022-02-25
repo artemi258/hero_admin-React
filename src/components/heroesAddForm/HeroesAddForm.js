@@ -1,5 +1,5 @@
 import { useHttp } from "../../hooks/http.hook";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from 'react-redux';
 import {  heroesFetched, heroesFetchingError } from '../../actions';
 import { v4 as uuidv4 } from 'uuid';
@@ -19,6 +19,7 @@ const HeroesAddForm = () => {
 
     const [data, setData] = useState({name: '', description: '', element: ''});
     const {heroes} = useSelector(state => state);
+    const [option, setOption] = useState([]);
     const dispatch = useDispatch();
     const {request} = useHttp();
 
@@ -32,7 +33,26 @@ const HeroesAddForm = () => {
         setData({...data, element: e.target.value});
     }
 
+    useEffect(() => {
+        onRequest();
+    }, [])
 
+    const onRequest = () => {
+        request('http://localhost:3001/filters')
+                .then(res => res.splice(1))
+                .then(onOptionLoaded)
+                .catch(() => dispatch(heroesFetchingError()))
+    }
+
+    const onOptionLoaded = (option) => {
+        setOption(option); 
+    }
+
+    const content = () => {
+       return option.map(item => {
+            return <option value={item}>{item}</option>
+        })
+    }
 
     const form = <form className="border p-4 shadow-lg rounded" onSubmit={(e) => bindPostData(e)}>
     <div className="mb-3">
@@ -70,11 +90,8 @@ const HeroesAddForm = () => {
             value={data.element}
             onChange={onChangeElement}
             name="element">
-            <option >Я владею элементом...</option>
-            <option value="огонь">Огонь</option>
-            <option value="вода">Вода</option>
-            <option value="ветер">Ветер</option>
-            <option value="земля">Земля</option>
+            <option>Я владею элементом...</option>
+            {content()}
         </select>
     </div>
 
