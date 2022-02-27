@@ -50,7 +50,7 @@ const HeroesAddForm = () => {
 
     const content = () => {
        return option.map(item => {
-            return <option value={item}>{item}</option>
+            return <option key={item} value={item}>{item}</option>
         })
     }
 
