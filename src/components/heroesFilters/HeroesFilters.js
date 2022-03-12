@@ -1,7 +1,8 @@
-import { useHttp } from "../../hooks/http.hook";
-import { useState, useEffect } from "react";
-import { heroesFetched, heroesFetchingError } from '../../actions';
+import { useEffect } from "react";
+import { filtersFetching, filtersFetched, filterActiv, filtersFetchingError, fetchFilters} from './filtersSlice';
 import { useDispatch, useSelector } from 'react-redux';
+
+import Spinner from "../spinner/Spinner";
 
 // Задача для этого компонента:
 // Фильтры должны формироваться на основании загруженных данных
@@ -12,9 +13,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 const HeroesFilters = () => {
 
-    const {request} = useHttp();
-    const [filters, setFilters] = useState([]);
-    const {heroes, filter} = useSelector(state => state);
+    const { filters, filtersLoadingStatus, activeFilter } = useSelector(state => state.filters);
     const dispatch = useDispatch();
 
     useEffect(() => {
@@ -22,32 +21,13 @@ const HeroesFilters = () => {
     }, [])
 
     const onRequest = () => {
-        request('http://localhost:3001/filters')
-                .then(onFiltersLoaded)
-                .catch(() => dispatch(heroesFetchingError()))
+        dispatch(fetchFilters())
     }
 
-    const onFiltersLoaded = (option) => {
-        setFilters(option); 
-    }
-
-    const onFilter = (filter) => {
-        switch (filter) {
-                case 'Огонь':
-                    dispatch(heroesFetched(heroes, filter));
-                    break;
-                case 'Вода':
-                    dispatch(heroesFetched(heroes, filter));
-                    break;
-                case 'Ветер':
-                    dispatch(heroesFetched(heroes, filter));
-                    break;
-                case 'Земля':
-                    dispatch(heroesFetched(heroes, filter));
-                    break;
-                default:
-                    dispatch(heroesFetched(heroes, filter));
-        }
+    if (filtersLoadingStatus === "loading") {
+        return <Spinner/>;
+    } else if (filtersLoadingStatus === "error") {
+        return <h5 className="text-center mt-5">Ошибка загрузки</h5>
     }
 
     let elementClassName;
@@ -75,10 +55,9 @@ const HeroesFilters = () => {
                     elementClassName = 'bg-warning bg-gradient';
              }
 
-            return <button key={i} onClick={() => onFilter(item)} className={` ${elementClassName} ${item === filter ? 'active' : ''}`}>{item}</button>
+            return <button key={i} onClick={() => dispatch(filterActiv(item))} className={` ${elementClassName} ${item === activeFilter ? 'active' : ''}`}>{item}</button>
         })
     }
-
     return (
         <div className="card shadow-lg mt-4">
             <div className="card-body">

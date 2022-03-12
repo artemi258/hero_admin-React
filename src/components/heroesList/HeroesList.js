@@ -1,9 +1,8 @@
-import {useHttp} from '../../hooks/http.hook';
 import { useEffect} from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 
-import { heroesFetching, heroesFetched, heroesFetchingError } from '../../actions';
+import { fetchHeroes, filterHeroesSelector } from './heroesSlice';
 import HeroesListItem from "../heroesListItem/HeroesListItem";
 import Spinner from '../spinner/Spinner';
 
@@ -13,15 +12,13 @@ import Spinner from '../spinner/Spinner';
 // Удаление идет и с json файла при помощи метода DELETE
 
 const HeroesList = () => {
-    const {heroes, filter, heroesLoadingStatus} = useSelector(state => state);
+
+    const filterHeroes = useSelector(filterHeroesSelector);
+    const heroesLoadingStatus = useSelector(state => state.heroes.heroesLoadingStatus)
     const dispatch = useDispatch();
-    const {request} = useHttp();
 
     useEffect(() => {
-        dispatch(heroesFetching());
-        request("http://localhost:3001/heroes")
-            .then(data => dispatch(heroesFetched(data)))
-            .catch(() => dispatch(heroesFetchingError()));
+        dispatch(fetchHeroes());
 
         // eslint-disable-next-line
     }, []);
@@ -29,35 +26,30 @@ const HeroesList = () => {
     if (heroesLoadingStatus === "loading") {
         return <Spinner/>;
     } else if (heroesLoadingStatus === "error") {
-        return <h5 className="text-center mt-5">Ошибка загрузки</h5>
+        return <CSSTransition key={'error'} timeout={1000} classNames="fade">
+                    <h5 className="text-center mt-5">Ошибка загрузки</h5>
+                </CSSTransition>
     }
 
     const renderHeroesList = (arr) => {
         if (arr.length === 0) {
-            return <h5 className="text-center mt-5">Героев пока нет</h5>
+            return <CSSTransition key={'empty'} timeout={1000} classNames="fade">
+                        <h5 className="text-center mt-5">Героев пока нет</h5>
+                    </CSSTransition>
         }
-        const content =   arr.filter(({element}) => {
-                            if (filter === 'Все') {
-                                return true;
-                            } else {
-                            return element === filter;
-                            }
-                        })
-                        .map(({id, ...props}) =>  {
+        const content = arr.map(({id, ...props}) =>  {
                           return <CSSTransition key={id} timeout={1000} classNames="fade">
                                     <HeroesListItem key={id} id={id} {...props}/>
                                  </CSSTransition>
                         });
                     
-                            return <TransitionGroup component={null}>
-                                        {content}
-                                    </TransitionGroup>                      
+                            return content
     }
-    const elements = renderHeroesList(heroes);
+    const elements = renderHeroesList(filterHeroes);
             return (
-                <ul>
+                <TransitionGroup component={'ul'}>
                     {elements}
-                </ul>
+                </TransitionGroup>                      
             )
 }
 

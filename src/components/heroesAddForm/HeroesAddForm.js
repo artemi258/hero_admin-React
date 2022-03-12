@@ -1,9 +1,8 @@
 import { useHttp } from "../../hooks/http.hook";
 import { useState, useEffect } from "react";
-import { useDispatch, useSelector } from 'react-redux';
-import {  heroesFetched, heroesFetchingError } from '../../actions';
+import { useDispatch } from 'react-redux';
+import {  createdHero, heroesFetchingError } from '../heroesList/heroesSlice';
 import { v4 as uuidv4 } from 'uuid';
-
 
 // Задача для этого компонента:
 // Реализовать создание нового героя с введенными данными. Он должен попадать
@@ -18,7 +17,6 @@ import { v4 as uuidv4 } from 'uuid';
 const HeroesAddForm = () => {
 
     const [data, setData] = useState({name: '', description: '', element: ''});
-    const {heroes} = useSelector(state => state);
     const [option, setOption] = useState([]);
     const dispatch = useDispatch();
     const {request} = useHttp();
@@ -111,8 +109,7 @@ const HeroesAddForm = () => {
         const finalData = Object.assign({id: uuidv4()}, data)
             const postData = JSON.stringify(finalData)
             request('http://localhost:3001/heroes', 'POST', postData)
-            .then(data => heroes.push(data))
-            .then(() => dispatch(heroesFetched(heroes)))
+            .then(data => dispatch(createdHero(data)))
             .catch(() => dispatch(heroesFetchingError()))
             .finally(() => clearForm())
     }

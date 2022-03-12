@@ -1,14 +1,13 @@
 import { useHttp } from "../../hooks/http.hook";
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
 
-import { heroesFetched, heroesFetchingError } from '../../actions';
+import { heroesFetchingError, deleteHero } from '../heroesList/heroesSlice';
 import '../app/app.scss';
 
 const HeroesListItem = ({id, name, description, element}) => {
 
     const {request} = useHttp();
-    const {heroes} = useSelector(state => state);
     const dispatch = useDispatch();
 
     let elementClassName;
@@ -30,10 +29,9 @@ const HeroesListItem = ({id, name, description, element}) => {
             elementClassName = 'bg-warning bg-gradient';
     }
 
-    const onDeleteHeroes = () => {
+    const onDeleteHeroes = (id) => {
             request(`http://localhost:3001/heroes/${id}`, 'DELETE')
-        .then(() => heroes.filter(item => item.id !== id))
-        .then((res) => dispatch(heroesFetched(res)))
+        .then(() => dispatch(deleteHero(id)))
         .catch(() => dispatch(heroesFetchingError()));
     }
 
@@ -49,7 +47,7 @@ const HeroesListItem = ({id, name, description, element}) => {
                     <h3 className="card-title">{name}</h3>
                     <p className="card-text">{description}</p>
                 </div>
-                <span onClick={() => {onDeleteHeroes();}} className="position-absolute top-0 start-100 translate-middle badge border rounded-pill bg-light">
+                <span onClick={() => onDeleteHeroes(id)} className="position-absolute top-0 start-100 translate-middle badge border rounded-pill bg-light">
                     <button type="button" className="btn-close btn-close" aria-label="Close"></button>
                 </span>
             </li>
