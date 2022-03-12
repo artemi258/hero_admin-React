@@ -48,7 +48,7 @@ const HeroesAddForm = () => {
 
     const content = () => {
        return option.map(item => {
-            return <option key={item} value={item}>{item}</option>
+            return <option key={item.id} value={item.filter}>{item.filter}</option>
         })
     }
 

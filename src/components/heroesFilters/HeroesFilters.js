@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { filtersFetching, filtersFetched, filterActiv, filtersFetchingError, fetchFilters} from './filtersSlice';
+import { filtersFetching, filtersFetched, filterActiv, filtersFetchingError, fetchFilters, selectAll} from './filtersSlice';
 import { useDispatch, useSelector } from 'react-redux';
 
 import Spinner from "../spinner/Spinner";
@@ -13,12 +13,14 @@ import Spinner from "../spinner/Spinner";
 
 const HeroesFilters = () => {
 
-    const { filters, filtersLoadingStatus, activeFilter } = useSelector(state => state.filters);
+    const { entities, filtersLoadingStatus, activeFilter } = useSelector(state => state.filters);
+    const finalFilters = useSelector(state => selectAll(state))
     const dispatch = useDispatch();
 
     useEffect(() => {
         onRequest();
     }, [])
+
 
     const onRequest = () => {
         dispatch(fetchFilters())
@@ -32,10 +34,11 @@ const HeroesFilters = () => {
 
     let elementClassName;
 
+
     const content = () => {
-        return filters.map((item, i) => {
-            
-            switch (item) {
+        return finalFilters.map((item, i) => {
+        
+            switch (item.filter) {
                 case 'Все':
                     elementClassName = 'btn btn-outline-dark';
                     break;
@@ -55,7 +58,7 @@ const HeroesFilters = () => {
                     elementClassName = 'bg-warning bg-gradient';
              }
 
-            return <button key={i} onClick={() => dispatch(filterActiv(item))} className={` ${elementClassName} ${item === activeFilter ? 'active' : ''}`}>{item}</button>
+            return <button key={i} onClick={() => dispatch(filterActiv(item.filter))} className={` ${elementClassName} ${item.filter === activeFilter ? 'active' : ''}`}>{item.filter}</button>
         })
     }
     return (
